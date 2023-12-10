@@ -104,7 +104,7 @@ app.get('/gpt/:text', async (req, res) => {
         });
 
         if (response.data.choices) {
-            let agent_response = response.data.choices[0].message.content
+            let agent_response = response.data.choices[0].message.content.replace(/\n/g, " ");
 
             console.log ("Agent answer: " + agent_response)
             messages.push({role: "assistant", content: agent_response})
