@@ -69,13 +69,11 @@ app.get('/gpt/:text', async (req, res) => {
     //The agent should recieve Username:Message in the text to identify conversations with different users in his history. 
 
     const text = req.params.text
-    const { Configuration, OpenAIApi } = require("openai");
+    const { OpenAI } = require("openai");
 
-    const configuration = new Configuration({
-        apiKey: process.env.OPENAI_API_KEY,
+    const openai = new OpenAI({
+        apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
     });
-
-    const openai = new OpenAIApi(configuration);
 
     if (GPT_MODE === "CHAT"){
         //CHAT MODE EXECUTION
@@ -93,7 +91,7 @@ app.get('/gpt/:text', async (req, res) => {
         console.dir(messages)
         console.log("User Input: " + text)
 
-        const response = await openai.createChatCompletion({
+        const response = await openai.chat.completions.create({
             model: MODEL_NAME,
             messages: messages,
             temperature: 0.7,
@@ -102,9 +100,9 @@ app.get('/gpt/:text', async (req, res) => {
             frequency_penalty: 0,
             presence_penalty: 0,
         });
-
-        if (response.data.choices) {
-            let agent_response = response.data.choices[0].message.content.replace(/\n/g, " ");
+console.log(response);
+        if (response.choices) {
+            let agent_response = response.choices[0]?.message?.content.replace(/\n/g, " ");
 
             console.log ("Agent answer: " + agent_response)
             messages.push({role: "assistant", content: agent_response})
